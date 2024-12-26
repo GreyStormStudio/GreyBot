@@ -1,27 +1,21 @@
 import { colors } from "@/constant";
-interface MyCreepMemory extends CreepMemory {
-    role: string;
-    working: boolean;
-    targetId?: Id<AnyStructure | Source | AnyCreep>;
-}
 
-export class MyCreep {
-    private creep: Creep;
-    private memory: MyCreepMemory;
+export class SuperCreep {
+    public name: string
+    public creep: Creep;
+    public memory: CreepMemory;
 
     constructor(creep: Creep) {
         this.creep = creep;
-        this.memory = creep.memory as MyCreepMemory;
-        if (!this.memory.role) {
-            this.memory.role = 'harvester';
-        }
+        this.name = creep.name
+        this.memory = creep.memory
         if (this.memory.working === undefined) {
             this.memory.working = false;
         }
     }
 
     //移动
-    private moveTo(target: RoomObject | [number, number], color: string): void {
+    public moveTo(target: RoomObject | [number, number], color: string): void {
         if (Array.isArray(target)) {
             // 如果target是数组，则将其视为坐标
             this.creep.moveTo(target[0], target[1], { visualizePathStyle: { stroke: color, opacity: 1 } });
@@ -33,7 +27,7 @@ export class MyCreep {
     }
 
     //采集能量
-    private harvest(source: Source) {
+    public harvest(source: Source) {
         if (this.creep.harvest(source) === ERR_NOT_IN_RANGE) {
             this.moveTo(source, colors.yellow)
         }
@@ -43,7 +37,7 @@ export class MyCreep {
     }
 
     //升级控制器
-    private upgradeController() {
+    public upgradeController() {
         const roomControler = this.creep.room.controller!
         if (this.creep.upgradeController(roomControler) === ERR_NOT_IN_RANGE) {
             this.moveTo(roomControler, colors.green)
@@ -54,7 +48,7 @@ export class MyCreep {
     }
 
     //建造
-    private build(target?: ConstructionSite | null): void {
+    public build(target?: ConstructionSite | null): void {
         if (!target) {
             target = this.creep.pos.findClosestByPath(FIND_MY_CONSTRUCTION_SITES);
         }
@@ -72,7 +66,7 @@ export class MyCreep {
     }
 
     //搬运
-    private transfer(target?: AnyOwnedStructure) {
+    public transfer(target?: Structure) {
         if (!target) {//没有指定目标就存到storage里
             target = this.creep.room.find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_STORAGE } })[0]
         }
@@ -89,7 +83,7 @@ export class MyCreep {
     }
 
     //维修
-    private repair(target?: AnyStructure, isRepairWallAndRampart: boolean = false): void {
+    public repair(target?: AnyStructure, isRepairWallAndRampart: boolean = false): void {
         const filter = (structure: AnyStructure) => {
             if (isRepairWallAndRampart) {
                 return structure.hits < structure.hitsMax && structure.structureType !== STRUCTURE_WALL && structure.structureType !== STRUCTURE_RAMPART;
@@ -115,18 +109,7 @@ export class MyCreep {
         }
     }
 
-    public run(): void {
-        switch (this.memory.role) {
-            case 'harvest':
-                if (this.creep.store.getFreeCapacity() === 0) {
-                    this.memory.working = false
-                }
-                if (this.creep.store.getUsedCapacity() === 0) {
-                    this.memory.working = true
-                }
-                if(this.memory.working){
-                    
-                }
-        }
+    public getRole(): string {
+        return this.memory.role;
     }
 }

@@ -1,5 +1,5 @@
-import { MyCreep } from "@/MyCreep/myCreep";
+import { SuperCreep } from "@/MyCreep/myCreep";
 
-export function SpawnCreep(roon: Room) {
+function SpawnCreep(roon: Room) {
 
 }
