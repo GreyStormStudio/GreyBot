@@ -1,0 +1,6 @@
+dist
+node_modules
+.secret.json
+bin
+obj
+.vs

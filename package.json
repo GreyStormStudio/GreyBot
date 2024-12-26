@@ -1,0 +1,45 @@
+{
+  "name": "screep-ts-project",
+  "version": "0.0.0",
+  "description": "ScreepTsProject",
+  "main": "app.js",
+  "author": {
+    "name": ""
+  },
+  "scripts": {
+    "push": "rollup -cw --environment DEST:main",
+    "local": "rollup -c --environment DEST:local",
+    "test": "rollup -c --environment DEST:test",
+    "localtest": "rollup -c --environment DEST:testlocal",
+    "build": "rollup -c"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^28.0.1",
+    "@rollup/plugin-node-resolve": "^15.3.0",
+    "@types/lodash": "^3.10.1",
+    "@types/node": "^14.14.7",
+    "@types/screeps": "^3.3.8",
+    "@typescript-eslint/eslint-plugin": "^5.33.0",
+    "@typescript-eslint/parser": "^5.33.0",
+    "eslint": "^8.21.0",
+    "rollup": "^2.22.1",
+    "rollup-plugin-clear": "^2.0.7",
+    "rollup-plugin-copy": "^3.5.0",
+    "rollup-plugin-screeps": "^1.0.1",
+    "rollup-plugin-typescript2": "^0.36.0",
+    "typescript": "^4.5.2"
+  },
+  "eslintConfig": {
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+      "ecmaVersion": "latest",
+      "sourceType": "module"
+    },
+    "plugins": [
+      "@typescript-eslint"
+    ]
+  },
+  "dependencies": {
+    "source-map": "^0.6.1"
+  }
+}
