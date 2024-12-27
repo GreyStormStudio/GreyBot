@@ -1,3 +1,3 @@
 interface Source {
-    MinersNumber: number
+    Miners: string[]
 }

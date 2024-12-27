@@ -11,4 +11,5 @@ interface Creep {
     _build(target?: ConstructionSite | null): void;
     _transfer(target?: Structure): void;
     _repair(target?: AnyStructure, isRepairWallAndRampart?: boolean): void;
+    run(): void;
 }

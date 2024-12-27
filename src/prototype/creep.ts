@@ -6,7 +6,7 @@ export default class CreepFunctions extends Creep {
         } else {
             this.moveTo(target, { visualizePathStyle: { stroke: color, opacity: 1 } });
         }
-        this.say("🧑‍🦽", true);
+        this.say("🚗", true);
     }
     _harvest(source: Source) {
         if (this.harvest(source) === ERR_NOT_IN_RANGE) this._moveTo(source, colors.yellow);
@@ -22,10 +22,6 @@ export default class CreepFunctions extends Creep {
         if (!target) target = this.pos.findClosestByPath(FIND_MY_CONSTRUCTION_SITES);
         if (target && this.build(target) === ERR_NOT_IN_RANGE) this._moveTo(target, colors.blue);
         else if (target) this.say("⚒️", true);
-        else {
-            this.say("💀", true);
-            this.suicide();
-        }
     }
     _transfer(target?: Structure) {
         if (!target) {
@@ -49,6 +45,78 @@ export default class CreepFunctions extends Creep {
         if (target && this.repair(target) === ERR_NOT_IN_RANGE) this._moveTo(target, colors.gray);
         else if (target) this.say("🔧", true);
         else this.say("💤", true);
+    }
+    run() {
+        if (this.memory.role.endsWith("harvester")) {
+            if (this.memory.working) {
+                const sources = this.room.find(FIND_SOURCES)
+                let aim = sources[0]
+                this._harvest(aim)
+            }
+            else {
+                const Storage = this.room.find(FIND_STRUCTURES, {
+                    filter: (structure) => {
+                        return (structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN) &&
+                            structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
+                    }
+                });
+                if (Storage.length > 0) {
+                    this._transfer(Storage[0])
+                }
+                else {
+                    const target = this.pos.findClosestByPath(FIND_MY_CONSTRUCTION_SITES);
+                    if (target) {
+                        this._build(target)
+                    }
+                    else {
+                        this._upgradeController()
+                    }
+
+                }
+
+            }
+            if (this.store.getFreeCapacity() === 0 && this.memory.working === true) {
+                this.memory.working = false
+            }
+            if (this.store.getUsedCapacity() === 0 && this.memory.working === false) {
+                this.memory.working = true
+            }
+        }
+        if (this.memory.role.endsWith("upgrader")) {
+            if (this.memory.working) {
+                const sources = this.room.find(FIND_SOURCES)
+                let aim = sources[1]
+                this._harvest(aim)
+            }
+            else {
+                this._upgradeController()
+            }
+            if (this.store.getFreeCapacity() === 0 && this.memory.working === true) {
+                this.memory.working = false
+            }
+            if (this.store.getUsedCapacity() === 0 && this.memory.working === false) {
+                this.memory.working = true
+            }
+        }
+        if (this.memory.role.endsWith("builder")) {
+            if (this.memory.working) {
+                const sources = this.room.find(FIND_SOURCES)
+                let aim = sources[1]
+                this._harvest(aim)
+            }
+            else {
+                this._build()
+            }
+            if (this.store.getFreeCapacity() === 0 && this.memory.working === true) {
+                this.memory.working = false
+            }
+            if (this.store.getUsedCapacity() === 0 && this.memory.working === false) {
+                this.memory.working = true
+            }
+        }
+        if (this.ticksToLive! < 50 && !this.memory.role.startsWith("_")) {
+            this.memory.role = "_" + this.memory.role
+        }
     }
 }
 

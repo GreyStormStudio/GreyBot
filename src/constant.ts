@@ -18,19 +18,26 @@ export const colors = {
     navy: "#000080",
     teal: "#008080"
 };
-export const btype = {
+interface BodyType {
+    [key: string]: {
+        [part: string]: {
+            [type: string]: number
+        }
+    };
+}
+export const btype: BodyType = {
     "Worker": {
-        "S": { WORK: 1, CARRY: 1, MOVE: 2 },
-        "M": { WORK: 2, CARRY: 2, MOVE: 4 },
-        "L": { WORK: 5, CARRY: 5, MOVE: 10 },
-        "X": { WORK: 7, CARRY: 7, MOVE: 14 },
-        "T": { WORK: 10, CARRY: 1, MOVE: 10 },
+        "S": { "work": 1, "carry": 1, "move": 2 },
+        "M": { "work": 2, "carry": 2, "move": 4 },
+        "L": { "work": 5, "carry": 5, "move": 10 },
+        "X": { "work": 7, "carry": 7, "move": 14 },
+        "T": { "work": 10, "carry": 1, "move": 10 },
     },
     "Carrier": {
-        "S": { WORK: 1, CARRY: 1, MOVE: 2 },
-        "M": { CARRY: 4, MOVE: 4 },
-        "L": { CARRY: 10, MOVE: 10 },
-        "X": { CARRY: 14, MOVE: 14 },
-        "T": { CARRY: 20, MOVE: 20 },
+        "S": { "work": 1, "carry": 1, "move": 2 },
+        "M": { "carry": 4, "move": 4 },
+        "L": { "carry": 10, "move": 10 },
+        "X": { "carry": 14, "move": 14 },
+        "T": { "carry": 20, "move": 20 },
     }
 }
