@@ -47,6 +47,12 @@ export default class CreepFunctions extends Creep {
         else this.say("💤", true);
     }
     run() {
+        if (this.store.getFreeCapacity() === 0 && this.memory.working === true) {
+            this.memory.working = false
+        }
+        if (this.store.getUsedCapacity() === 0 && this.memory.working === false) {
+            this.memory.working = true
+        }
         if (this.memory.role.endsWith("harvester")) {
             if (this.memory.working) {
                 const sources = this.room.find(FIND_SOURCES)
@@ -75,12 +81,6 @@ export default class CreepFunctions extends Creep {
                 }
 
             }
-            if (this.store.getFreeCapacity() === 0 && this.memory.working === true) {
-                this.memory.working = false
-            }
-            if (this.store.getUsedCapacity() === 0 && this.memory.working === false) {
-                this.memory.working = true
-            }
         }
         if (this.memory.role.endsWith("upgrader")) {
             if (this.memory.working) {
@@ -91,12 +91,6 @@ export default class CreepFunctions extends Creep {
             else {
                 this._upgradeController()
             }
-            if (this.store.getFreeCapacity() === 0 && this.memory.working === true) {
-                this.memory.working = false
-            }
-            if (this.store.getUsedCapacity() === 0 && this.memory.working === false) {
-                this.memory.working = true
-            }
         }
         if (this.memory.role.endsWith("builder")) {
             if (this.memory.working) {
@@ -105,13 +99,13 @@ export default class CreepFunctions extends Creep {
                 this._harvest(aim)
             }
             else {
-                this._build()
-            }
-            if (this.store.getFreeCapacity() === 0 && this.memory.working === true) {
-                this.memory.working = false
-            }
-            if (this.store.getUsedCapacity() === 0 && this.memory.working === false) {
-                this.memory.working = true
+                const target = this.pos.findClosestByPath(FIND_MY_CONSTRUCTION_SITES);
+                if (target) {
+                    this._build(target)
+                }
+                else {
+                    this._upgradeController()
+                }
             }
         }
         if (this.ticksToLive! < 50 && !this.memory.role.startsWith("_")) {

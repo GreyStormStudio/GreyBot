@@ -8,6 +8,7 @@
   },
   "scripts": {
     "push": "rollup -cw --environment DEST:main",
+    "push_once": "rollup -c --environment DEST:main",
     "local": "rollup -c --environment DEST:local",
     "test": "rollup -c --environment DEST:test",
     "localtest": "rollup -c --environment DEST:testlocal",
