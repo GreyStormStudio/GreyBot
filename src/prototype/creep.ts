@@ -113,6 +113,27 @@ export default class CreepFunctions extends Creep {
 
             }
         }
+        if (this.memory.role.endsWith("harvesterEX")) {
+            if (this.memory.working) {
+                const flag = "1"
+                if (!this.pos.isEqualTo(Game.flags[flag])) {
+                    this._moveTo(Game.flags[flag], colors.olive)
+                }
+                else {
+                    this._harvest(this.room.find(FIND_SOURCES)[0])
+                }
+            }
+            else {
+                if (!this.pos.isNearTo(Game.flags["home"])) {
+                    this._moveTo(Game.flags["home"], colors.pink)
+                }
+                else {
+                    this._transfer()
+                }
+
+            }
+
+        }
         if (this.memory.role.endsWith("miner0")) {
             if (!this.pos.isEqualTo(Game.flags["miner0"])) {
                 this._moveTo(Game.flags["miner0"], colors.yellow)
@@ -157,7 +178,7 @@ export default class CreepFunctions extends Creep {
             else {
                 const Storage = this.pos.findClosestByPath(FIND_STRUCTURES, {
                     filter: (structure) => {
-                        return (structure.structureType === STRUCTURE_EXTENSION || structure.structureType === STRUCTURE_SPAWN) && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0 || (structure.structureType === STRUCTURE_TOWER) && structure.store.getFreeCapacity()! > 200;
+                        return ((structure.structureType === STRUCTURE_EXTENSION || structure.structureType === STRUCTURE_SPAWN || structure.structureType === STRUCTURE_TOWER) && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0);
                     }
                 });
                 if (Storage) {
@@ -196,7 +217,7 @@ export default class CreepFunctions extends Creep {
                 this._withdraw()
             }
             else {
-                const filter = (structure: AnyStructure) => structure.hits < structure.hitsMax && structure.structureType !== STRUCTURE_WALL && structure.structureType !== STRUCTURE_CONTAINER;
+                const filter = (structure: AnyStructure) => structure.hits < structure.hitsMax && structure.structureType !== STRUCTURE_WALL;
                 const damaged_Buildings = this.room.find(FIND_STRUCTURES, { filter })
                 if (damaged_Buildings.length > 0) {
                     const target = damaged_Buildings.sort((a, b) => a.hits - b.hits)[0]
@@ -207,7 +228,7 @@ export default class CreepFunctions extends Creep {
                 }
             }
         }
-        if (this.ticksToLive! < this.body.length * 3 && !this.memory.role.startsWith("_")) {
+        if (this.ticksToLive! < this.body.length * 3 + 3 && !this.memory.role.startsWith("_")) {
             this.memory.role = "_" + this.memory.role
         }
     }

@@ -1,3 +1,4 @@
+import { ExMiner } from "@/ex-sources/E44N17";
 export function E43N17room() {
     //const harvesters = _.filter(Game.creeps, (creep) => creep.memory.role === 'harvester' && creep.memory.room === "E43N17").length;
     const upgraders = _.filter(Game.creeps, (creep) => creep.memory.role === 'upgrader' && creep.memory.room === "E43N17").length;
@@ -28,7 +29,7 @@ export function E43N17room() {
     else if (builders < 1) {
         Game.spawns["Spawn1"]._spawnCreep("builder", "Worker", "4", "E43N17")
     }
-
+    ExMiner()
     const enemy = Game.rooms["E43N17"].find(FIND_HOSTILE_CREEPS)
     if (enemy.length > 0) {
         const towers = Game.rooms["E43N17"].find(FIND_MY_STRUCTURES, {
@@ -36,22 +37,6 @@ export function E43N17room() {
         })
         for (const tower of towers) {
             (tower as StructureTower).attack(enemy[0])
-        }
-    }
-    else {
-        const filter = (structure: AnyStructure) => (structure.hits + 800 < structure.hitsMax) && structure.structureType !== STRUCTURE_WALL && structure.structureType !== STRUCTURE_RAMPART;
-        const damaged_Buildings = Game.rooms["E43N17"].find(FIND_STRUCTURES, { filter })
-        const target = damaged_Buildings.sort((a, b) => a.hits - b.hits)[0]
-        if (damaged_Buildings.length > 0) {
-            const towers = Game.rooms["E43N17"].find(FIND_MY_STRUCTURES, {
-                filter: structure => structure.structureType === STRUCTURE_TOWER
-            })
-            for (const tower of towers) {
-                if ((tower as StructureTower).store[RESOURCE_ENERGY] > 500) {
-
-                    (tower as StructureTower).repair(target)
-                }
-            }
         }
     }
 }
