@@ -1,3 +1,3 @@
 interface StructureSpawn {
-    _spawnCreep(role: string, ctype: "Worker" | "Carrier", size: "S" | "M" | "L" | "X" | "T"): void
+    _spawnCreep(role: string, type: "Worker" | "Miner" | "Manager", size: "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8", room: string): void
 }

@@ -25,19 +25,45 @@ interface BodyType {
         }
     };
 }
+/**
+ * 1:300
+ * 2:300+5*50 = 750
+ * 3:300+10*50 = 800
+ * 4:300+20*50 = 1300
+ * 5:300+30*50 = 1800
+ * 6:300+40*50  = 2300
+ * 7:300*2+50*100 = 5600
+ * 8:300*3+60*200 = 12900
+ */
 export const btype: BodyType = {
     "Worker": {
-        "S": { "work": 1, "carry": 1, "move": 2 },
-        "M": { "work": 2, "carry": 2, "move": 4 },
-        "L": { "work": 5, "carry": 5, "move": 10 },
-        "X": { "work": 7, "carry": 7, "move": 14 },
-        "T": { "work": 10, "carry": 1, "move": 10 },
+        "1": { "work": 1, "carry": 1, "move": 2 },
+        "2": { "work": 2, "carry": 2, "move": 4 },
+        "3": { "work": 3, "carry": 3, "move": 6 },
+        "4": { "work": 6, "carry": 6, "move": 6 },
+        "5": { "work": 10, "carry": 1, "move": 10 },
+        "6": {},
+        "7": {},
+        "8": {}
     },
-    "Carrier": {
-        "S": { "work": 1, "carry": 1, "move": 2 },
-        "M": { "carry": 4, "move": 4 },
-        "L": { "carry": 10, "move": 10 },
-        "X": { "carry": 14, "move": 14 },
-        "T": { "carry": 20, "move": 20 },
+    "Manager": {
+        "1": { "work": 1, "carry": 1, "move": 2 },
+        "2": { "work": 2, "carry": 2, "move": 4 },
+        "3": { "work": 3, "carry": 3, "move": 6 },
+        "4": { "carry": 12, "move": 12 },
+        "5": { "carry": 20, "move": 20 },
+        "6": {},
+        "7": {},
+        "8": {}
+    },
+    "Miner": {
+        "1": { "work": 2, "move": 2 },
+        "2": {},
+        "3": {},
+        "4": { "work": 8, "move": 4 },
+        "5": {},
+        "6": {},
+        "7": {},
+        "8": {}
     }
 }

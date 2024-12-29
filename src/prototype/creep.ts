@@ -36,8 +36,19 @@ export default class CreepFunctions extends Creep {
             }
         }
     }
-    _repair(target?: AnyStructure, isRepairWallAndRampart: boolean = false) {
-        const filter = (structure: AnyStructure) => structure.hits < structure.hitsMax && (!isRepairWallAndRampart || (structure.structureType !== STRUCTURE_WALL && structure.structureType !== STRUCTURE_RAMPART));
+    _withdraw(resType: ResourceConstant = RESOURCE_ENERGY, target?: Structure): void {
+        if (!target) {
+            target = this.room.storage!
+        }
+        if (!this.pos.isNearTo(target)) {
+            this._moveTo(target, colors.orange);
+        } else {
+            this.withdraw(target, resType);
+            this.say("🛄", true)
+        }
+    }
+    _repair(target?: AnyStructure) {
+        const filter = (structure: AnyStructure) => structure.hits < structure.hitsMax && structure.structureType !== STRUCTURE_WALL;
         if (!target) {
             const targets = this.room.find(FIND_STRUCTURES, { filter });
             target = targets.length > 0 ? targets.sort((a, b) => a.hits - b.hits)[0] : undefined;
@@ -45,6 +56,26 @@ export default class CreepFunctions extends Creep {
         if (target && this.repair(target) === ERR_NOT_IN_RANGE) this._moveTo(target, colors.gray);
         else if (target) this.say("🔧", true);
         else this.say("💤", true);
+    }
+    runfilter(filterRole: string): void {
+        const constructionSite = this.room.find(FIND_CONSTRUCTION_SITES);
+        const filter = (structure: AnyStructure) => structure.hits < structure.hitsMax && structure.structureType !== STRUCTURE_WALL;
+        const damaged_Buildings = this.room.find(FIND_STRUCTURES, { filter })
+        switch (filterRole) {
+            case "builder":
+                if (damaged_Buildings.length > 0) {
+                    const target = damaged_Buildings.sort((a, b) => a.hits - b.hits)[0]
+                    this._repair(target)
+                    break;
+                }
+                this._upgradeController();
+                break;
+            case "repairer":
+                if (constructionSite.length > 0) {
+                    this._build(constructionSite[0])
+                }
+                this._upgradeController()
+        }
     }
     run() {
         if (this.store.getFreeCapacity() === 0 && this.memory.working === true) {
@@ -55,38 +86,92 @@ export default class CreepFunctions extends Creep {
         }
         if (this.memory.role.endsWith("harvester")) {
             if (this.memory.working) {
-                const sources = this.room.find(FIND_SOURCES)
-                let aim = sources[0]
-                this._harvest(aim)
+                const container = this.room.find(FIND_STRUCTURES, {
+                    filter: (structure) => {
+                        return structure.structureType === STRUCTURE_CONTAINER && structure.store.getUsedCapacity(RESOURCE_ENERGY) > 500
+                    }
+                })
+                if (container.length > 0) {
+                    this._withdraw(RESOURCE_ENERGY, container[0])
+                }
+                else {
+                    this.say("💤", true)
+                }
             }
             else {
-                const Storage = this.room.find(FIND_STRUCTURES, {
+                const Storage = this.pos.findClosestByPath(FIND_STRUCTURES, {
                     filter: (structure) => {
-                        return (structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN) &&
+                        return (structure.structureType === STRUCTURE_EXTENSION ||
+                            structure.structureType === STRUCTURE_SPAWN ||
+                            structure.structureType === STRUCTURE_TOWER) &&
                             structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
                     }
                 });
-                if (Storage.length > 0) {
-                    this._transfer(Storage[0])
-                }
-                else {
-                    const target = this.pos.findClosestByPath(FIND_MY_CONSTRUCTION_SITES);
-                    if (target) {
-                        this._build(target)
-                    }
-                    else {
-                        this._upgradeController()
-                    }
-
+                if (Storage) {
+                    this._transfer(Storage)
                 }
 
             }
         }
+        if (this.memory.role.endsWith("miner0")) {
+            if (!this.pos.isEqualTo(Game.flags["miner0"])) {
+                this._moveTo(Game.flags["miner0"], colors.yellow)
+            }
+            else {
+                this._harvest(this.room.find(FIND_SOURCES)[0])
+            }
+
+        }
+        if (this.memory.role.endsWith("miner1")) {
+            if (!this.pos.isEqualTo(Game.flags["miner1"])) {
+                this._moveTo(Game.flags["miner1"], colors.yellow)
+            }
+            else {
+                this._harvest(this.room.find(FIND_SOURCES)[1])
+            }
+        }
+        if (this.memory.role.endsWith("carrier")) {
+            if (this.memory.working) {
+                const container = this.room.find(FIND_STRUCTURES, {
+                    filter: (structure) => {
+                        return structure.structureType === STRUCTURE_CONTAINER && structure.store.getUsedCapacity(RESOURCE_ENERGY) > 500
+                    }
+                })
+                container.sort((a, b) => (b as StructureContainer).store.getUsedCapacity(RESOURCE_ENERGY) - (a as StructureContainer).store.getUsedCapacity(RESOURCE_ENERGY));
+                if (container.length > 0) {
+                    this._withdraw(RESOURCE_ENERGY, container[0])
+                }
+                else {
+                    this.moveTo(Game.flags["Sleep2"])
+                    this.say("💤", true)
+                }
+            }
+            else {
+                this._transfer()
+            }
+        }
+        if (this.memory.role.endsWith("manager")) {
+            if (this.memory.working) {
+                this._withdraw()
+            }
+            else {
+                const Storage = this.pos.findClosestByPath(FIND_STRUCTURES, {
+                    filter: (structure) => {
+                        return (structure.structureType === STRUCTURE_EXTENSION || structure.structureType === STRUCTURE_SPAWN) && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0 || (structure.structureType === STRUCTURE_TOWER) && structure.store.getFreeCapacity()! > 200;
+                    }
+                });
+                if (Storage) {
+                    this._transfer(Storage)
+                }
+                else {
+                    this.moveTo(Game.flags["Sleep1"])
+                    this.say("💤", true)
+                }
+            }
+        }
         if (this.memory.role.endsWith("upgrader")) {
             if (this.memory.working) {
-                const sources = this.room.find(FIND_SOURCES)
-                let aim = sources[1]
-                this._harvest(aim)
+                this._withdraw()
             }
             else {
                 this._upgradeController()
@@ -94,9 +179,7 @@ export default class CreepFunctions extends Creep {
         }
         if (this.memory.role.endsWith("builder")) {
             if (this.memory.working) {
-                const sources = this.room.find(FIND_SOURCES)
-                let aim = sources[1]
-                this._harvest(aim)
+                this._withdraw()
             }
             else {
                 const target = this.pos.findClosestByPath(FIND_MY_CONSTRUCTION_SITES);
@@ -104,11 +187,27 @@ export default class CreepFunctions extends Creep {
                     this._build(target)
                 }
                 else {
-                    this._upgradeController()
+                    this.runfilter("builder")
                 }
             }
         }
-        if (this.ticksToLive! < 50 && !this.memory.role.startsWith("_")) {
+        if (this.memory.role.endsWith("repairer")) {
+            if (this.memory.working) {
+                this._withdraw()
+            }
+            else {
+                const filter = (structure: AnyStructure) => structure.hits < structure.hitsMax && structure.structureType !== STRUCTURE_WALL && structure.structureType !== STRUCTURE_CONTAINER;
+                const damaged_Buildings = this.room.find(FIND_STRUCTURES, { filter })
+                if (damaged_Buildings.length > 0) {
+                    const target = damaged_Buildings.sort((a, b) => a.hits - b.hits)[0]
+                    this._repair(target)
+                }
+                else {
+                    this.runfilter("repairer")
+                }
+            }
+        }
+        if (this.ticksToLive! < this.body.length * 3 && !this.memory.role.startsWith("_")) {
             this.memory.role = "_" + this.memory.role
         }
     }

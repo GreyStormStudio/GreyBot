@@ -1,6 +1,6 @@
 import { btype } from "@/constant";
 export default class SpawnFunctions extends StructureSpawn {
-    _spawnCreep(role: string, type: "Worker" | "Carrier", size: "S" | "M" | "L" | "X" | "T") {
+    _spawnCreep(role: string, type: "Worker" | "Miner" | "Manager", size: "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8", room: string) {
         const Bodyzip = btype[type][size]
         const Body: any = []
         for (const part in Bodyzip) {
@@ -9,7 +9,7 @@ export default class SpawnFunctions extends StructureSpawn {
                 Body.push((part as BodyPartConstant))
             }
         }
-        this.spawnCreep(Body, role + Game.time, { memory: { role: role, working: false } })
+        this.spawnCreep(Body, role + Game.time, { memory: { role: role, working: false, room: room } })
     }
 }
 
