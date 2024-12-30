@@ -47,7 +47,7 @@ export const btype: BodyType = {
         "8": {}
     },
     "Manager": {
-        "1": { "work": 1, "carry": 1, "move": 2 },
+        "1": { "carry": 3, "move": 3 },
         "2": { "work": 2, "carry": 2, "move": 4 },
         "3": { "work": 3, "carry": 3, "move": 6 },
         "4": { "carry": 12, "move": 12 },

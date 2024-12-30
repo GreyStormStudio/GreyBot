@@ -1,6 +1,6 @@
 import { ExMiner } from "@/ex-sources/E44N17";
 export function E43N17room() {
-    //const harvesters = _.filter(Game.creeps, (creep) => creep.memory.role === 'harvester' && creep.memory.room === "E43N17").length;
+    const harvesters = _.filter(Game.creeps, (creep) => creep.memory.role === 'harvester' && creep.memory.room === "E43N17").length;
     const upgraders = _.filter(Game.creeps, (creep) => creep.memory.role === 'upgrader' && creep.memory.room === "E43N17").length;
     const builders = _.filter(Game.creeps, (creep) => creep.memory.role === 'builder' && creep.memory.room === "E43N17").length;
     const carriers = _.filter(Game.creeps, (creep) => creep.memory.role === 'carrier' && creep.memory.room === "E43N17").length;
@@ -8,10 +8,10 @@ export function E43N17room() {
     const miner1 = _.filter(Game.creeps, (creep) => creep.memory.role === 'miner1' && creep.memory.room === "E43N17").length;
     const manager = _.filter(Game.creeps, (creep) => creep.memory.role === 'manager' && creep.memory.room === "E43N17").length;
 
-    /*if (harvesters === 0) {
-        Game.spawns["Spawn1"]._spawnCreep("harvester", "Worker", "4", "E43N17")
+    if (Game.rooms["E43N17"].energyAvailable < 1000 && manager === 0 && harvesters === 0) {
+        Game.spawns["Spawn1"]._spawnCreep("harvester", "Manager", "1", "E43N17")
     }
-    else */if (miner0 === 0) {
+    else if (miner0 === 0) {
         Game.spawns["Spawn1"]._spawnCreep("miner0", "Miner", "4", "E43N17")
     }
     else if (miner1 === 0) {
@@ -29,7 +29,7 @@ export function E43N17room() {
     else if (builders < 1) {
         Game.spawns["Spawn1"]._spawnCreep("builder", "Worker", "4", "E43N17")
     }
-    ExMiner()
+    //ExMiner()
     const enemy = Game.rooms["E43N17"].find(FIND_HOSTILE_CREEPS)
     if (enemy.length > 0) {
         const towers = Game.rooms["E43N17"].find(FIND_MY_STRUCTURES, {
