@@ -57,14 +57,34 @@ export default class CreepFunctions extends Creep {
         else if (target) this.say("🔧", true);
         else this.say("💤", true);
     }
+    _attack(room: Room, target?: AnyCreep | AnyOwnedStructure,): void {
+        if (!target) {
+            target = this.room.find(FIND_HOSTILE_STRUCTURES)[0]
+            if (!target) {
+                target = this.room.find(FIND_HOSTILE_CREEPS)[0]
+            }
+        }
+        if (this.room !== room) {
+            this._moveTo(Game.flags["ATK"], colors.silver)
+        }
+        else {
+            if (this.attack(target) === ERR_NOT_IN_RANGE) {
+                this._moveTo(target, colors.silver)
+            }
+            else {
+                this.say("🪠", true)
+            }
+        }
+    }
     runfilter(filterRole: string): void {
         const constructionSite = this.room.find(FIND_CONSTRUCTION_SITES);
-        const filter = (structure: AnyStructure) => structure.hits < structure.hitsMax && structure.structureType !== STRUCTURE_WALL;
+        const filter = (structure: AnyStructure) => structure.hits < structure.hitsMax && structure.structureType !== STRUCTURE_WALL && structure.structureType !== STRUCTURE_RAMPART;
         const damaged_Buildings = this.room.find(FIND_STRUCTURES, { filter })
         switch (filterRole) {
             case "builder":
                 if (damaged_Buildings.length > 0) {
-                    const target = damaged_Buildings.sort((a, b) => a.hits - b.hits)[0]
+                    //const target = damaged_Buildings.sort((a, b) => a.hits - b.hits)[0]
+                    const target = damaged_Buildings[0]
                     this._repair(target)
                     break;
                 }
@@ -115,6 +135,9 @@ export default class CreepFunctions extends Creep {
         if (this.memory.role.endsWith("harvesterEX")) {
             if (this.memory.working) {
                 const flag = "1"
+                if (this.room.find(FIND_HOSTILE_CREEPS).length > 0) {
+                    this._moveTo(Game.flags["home"], colors.pink)
+                }
                 if (!this.pos.isEqualTo(Game.flags[flag])) {
                     this._moveTo(Game.flags[flag], colors.olive)
                 }
@@ -226,6 +249,9 @@ export default class CreepFunctions extends Creep {
                     this.runfilter("repairer")
                 }
             }
+        }
+        if (this.memory.role.endsWith("attacker")) {
+            this._attack(Game.rooms["E44N17"])
         }
         if (this.ticksToLive! < this.body.length * 3 + 3 && !this.memory.role.startsWith("_")) {
             this.memory.role = "_" + this.memory.role

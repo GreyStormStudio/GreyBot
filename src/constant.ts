@@ -41,7 +41,7 @@ export const btype: BodyType = {
         "2": { "work": 2, "carry": 2, "move": 4 },
         "3": { "work": 3, "carry": 3, "move": 6 },
         "4": { "work": 6, "carry": 6, "move": 6 },
-        "5": { "work": 10, "carry": 1, "move": 10 },
+        "5": { "work": 9, "carry": 9, "move": 9 },
         "6": {},
         "7": {},
         "8": {}
@@ -69,7 +69,7 @@ export const btype: BodyType = {
     "Ex-Miner": {
         "1": {},
         "2": {},
-        "3": {},
+        "3": { "work": 4, "carry": 4, "move": 8 },
         "4": { "work": 5, "carry": 5, "move": 10 },
         "5": {},
         "6": {},
